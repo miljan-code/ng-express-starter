@@ -1,0 +1,15 @@
+{
+  "name": "taskery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:api": "pnpm --filter api dev",
+    "dev:angular": "pnpm --filter angular start",
+    "dev:react": "pnpm --filter react dev",
+    "docker:compose": "docker-compose up -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
