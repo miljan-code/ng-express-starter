@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { ErrorResponse } from './interfaces/ApiResponse.js';
 import { getSession } from '@auth/express';
+import { ErrorResponse } from './interfaces/ApiResponse.js';
 import { authConfig } from './config/auth.js';
 
 export function notFound(req: Request, res: Response, next: NextFunction) {

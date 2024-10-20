@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { db } from '../db/index.js';
 import type { User } from '../db/schema/user.js';
 import type { ApiResponse } from '../interfaces/ApiResponse.js';
