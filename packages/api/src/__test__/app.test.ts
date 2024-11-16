@@ -1,6 +1,7 @@
+import { describe, it } from 'vitest';
 import request from 'supertest';
 
-import app from '../src/app.js';
+import app from '../app.js';
 
 describe('app', () => {
   it('responds with a not found message', (done) => {
