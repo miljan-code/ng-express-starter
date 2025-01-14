@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { defer, filter, switchMap } from 'rxjs';
+import { defer, exhaustMap, filter, switchMap } from 'rxjs';
 import { ComponentStore } from '@ngrx/component-store';
 import { tapResponse } from '@ngrx/operators';
 
@@ -45,6 +45,28 @@ export class AuthStore extends ComponentStore<AuthState> {
   init() {
     this.refresh();
   }
+
+  readonly login = this.effect<void>(
+    exhaustMap(() =>
+      this.authService.signIn('google').pipe(
+        tapResponse(
+          () => this.refresh(),
+          (error) => console.error('error signing in user: ', error),
+        ),
+      ),
+    ),
+  );
+
+  readonly logout = this.effect<void>(
+    exhaustMap(() =>
+      this.authService.signOut().pipe(
+        tapResponse(
+          () => this.refresh(),
+          (error) => console.error('error signing out user: ', error),
+        ),
+      ),
+    ),
+  );
 
   private readonly refresh = this.effect<void>(
     switchMap(() =>

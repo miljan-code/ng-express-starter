@@ -31,9 +31,7 @@ export class ThemeService {
   public syncInitialTheme(): void {
     const systemTheme = this.mediaQuery.matches ? 'dark' : 'light';
     this.systemTheme$.next(systemTheme);
-    this.theme$.next(
-      this.localStorage.get<Mode>('eventize__theme') ?? systemTheme,
-    );
+    this.theme$.next(this.localStorage.get<Mode>('__theme__') ?? systemTheme);
   }
 
   private toggleClassOnThemeChange(): void {
@@ -64,7 +62,7 @@ export class ThemeService {
   }
 
   public setTheme(mode: Mode): void {
-    this.localStorage.set('eventize__theme', mode);
+    this.localStorage.set('__theme__', mode);
     this.theme$.next(mode);
   }
 }

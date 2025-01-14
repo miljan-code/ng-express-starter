@@ -1,8 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthStore } from '../../core/auth/auth.store';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  standalone: true,
+  imports: [AsyncPipe],
   selector: 'app-marketing',
-  template: ` <div>Hello world</div> `,
+  template: `
+    @let auth = store.auth$ | async;
+
+    <div class="flex flex-col items-center justify-center">
+      @if (auth?.isAuthenticated) {
+        <span>Hello, {{ auth?.user?.name }}</span>
+        <button (click)="store.logout()">Sign out</button>
+      } @else {
+        <button (click)="store.login()">Sign in</button>
+      }
+    </div>
+  `,
 })
-export class MarketingComponent {}
+export class MarketingComponent {
+  public store = inject(AuthStore);
+}
