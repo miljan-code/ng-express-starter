@@ -1,7 +1,15 @@
-import { inject, Injectable } from '@angular/core';
-import { defer, exhaustMap, filter, switchMap } from 'rxjs';
-import { ComponentStore } from '@ngrx/component-store';
+import { computed, inject } from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
+import { defer, exhaustMap, pipe, switchMap, take } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import type { User } from '../../shared/models/user';
@@ -18,72 +26,61 @@ export const initialAuthState: AuthState = {
   status: 'idle',
 };
 
-@Injectable({ providedIn: 'root' })
-export class AuthStore extends ComponentStore<AuthState> {
-  private readonly authService = inject(AuthService);
+export const AuthStore = signalStore(
+  { providedIn: 'root' },
+  withState(initialAuthState),
+  withComputed(({ user, status }) => {
+    const isAuthenticated = computed(() => status() === 'authenticated');
 
-  readonly user$ = this.select((s) => s.user);
-  readonly status$ = this.select((s) => s.status);
-
-  readonly isAuthenticated$ = this.select(
-    this.status$.pipe(filter((status) => status !== 'idle')),
-    (status) => status === 'authenticated',
-    { debounce: true },
-  );
-
-  readonly auth$ = this.select(
-    this.isAuthenticated$,
-    this.user$,
-    (isAuthenticated, user) => ({ user, isAuthenticated }),
-    { debounce: true },
-  );
-
-  constructor() {
-    super(initialAuthState);
-  }
-
-  init() {
-    this.refresh();
-  }
-
-  readonly login = this.effect<void>(
-    exhaustMap(() =>
-      this.authService.signIn('google').pipe(
-        tapResponse(
-          () => this.refresh(),
-          (error) => console.error('error signing in user: ', error),
+    return { user, status, isAuthenticated };
+  }),
+  withMethods((store, authService = inject(AuthService)) => {
+    const refresh = rxMethod<void>(
+      pipe(
+        switchMap(() =>
+          defer(() => authService.getUser()).pipe(
+            tapResponse(
+              ({ user }) => {
+                patchState(store, {
+                  user,
+                  status: !!user ? 'authenticated' : 'unauthenticated',
+                });
+              },
+              (error) => {
+                console.error('error refreshing current user: ', error);
+                patchState(store, { user: null, status: 'unauthenticated' });
+              },
+            ),
+          ),
+        ),
+        take(1),
+      ),
+    );
+    const login = rxMethod<void>(
+      exhaustMap(() =>
+        authService.signIn('google').pipe(
+          tapResponse(
+            () => refresh(),
+            (error) => console.error('error signing in user: ', error),
+          ),
         ),
       ),
-    ),
-  );
-
-  readonly logout = this.effect<void>(
-    exhaustMap(() =>
-      this.authService.signOut().pipe(
-        tapResponse(
-          () => this.refresh(),
-          (error) => console.error('error signing out user: ', error),
+    );
+    const logout = rxMethod<void>(
+      exhaustMap(() =>
+        authService.signOut().pipe(
+          tapResponse(
+            () => refresh(),
+            (error) => console.error('error signing out user: ', error),
+          ),
         ),
       ),
-    ),
-  );
-
-  private readonly refresh = this.effect<void>(
-    switchMap(() =>
-      defer(() => this.authService.getUser()).pipe(
-        tapResponse(
-          ({ user }) => {
-            this.patchState({
-              user,
-              status: !!user ? 'authenticated' : 'unauthenticated',
-            });
-          },
-          (error) => {
-            console.error('error refreshing current user: ', error);
-            this.patchState({ user: null, status: 'unauthenticated' });
-          },
-        ),
-      ),
-    ),
-  );
-}
+    );
+    return { refresh, login, logout };
+  }),
+  withHooks({
+    onInit: (store) => {
+      store.refresh();
+    },
+  }),
+);
