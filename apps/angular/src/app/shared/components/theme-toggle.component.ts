@@ -3,11 +3,12 @@ import { AsyncPipe } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSun, lucideMoon } from '@ng-icons/lucide';
 
+import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
-  imports: [NgIconComponent, AsyncPipe],
+  imports: [HlmButtonDirective, NgIconComponent, AsyncPipe],
   viewProviders: [provideIcons({ lucideSun, lucideMoon })],
   template: `
     @let theme = themeService.theme$ | async;
