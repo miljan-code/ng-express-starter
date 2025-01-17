@@ -2,19 +2,12 @@
   "name": "angular",
   "version": "0.0.0",
   "private": true,
-  "jest": {
-    "preset": "jest-preset-angular",
-    "setupFilesAfterEnv": [
-      "<rootDir>/setup-jest.ts"
-    ],
-    "globalSetup": "jest-preset-angular/global-setup"
-  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "jest"
+    "test": "vitest"
   },
   "dependencies": {
     "@angular/animations": "^19.0.0",
@@ -39,20 +32,25 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@analogjs/platform": "^1.12.1",
+    "@analogjs/vite-plugin-angular": "^1.9.0",
+    "@analogjs/vitest-angular": "^1.9.0",
     "@angular-devkit/build-angular": "^19.0.0",
     "@angular/cli": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
     "@auth/core": "^0.37.0",
+    "@nx/vite": "^20.0.0",
     "@spartan-ng/cli": "0.0.1-alpha.388",
-    "@types/jest": "^29.5.13",
     "autoprefixer": "^10.4.20",
-    "jest": "^29.7.0",
-    "jest-preset-angular": "^14.5.0",
+    "jsdom": "^22.0.0",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13",
     "tailwindcss-animate": "^1.0.6",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.2",
+    "vite": "^6.0.7",
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^2.0.0"
   }
 }
