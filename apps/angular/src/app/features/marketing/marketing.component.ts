@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AuthStore } from '../../core/auth/auth.store';
 
 @Component({
@@ -13,6 +13,7 @@ import { AuthStore } from '../../core/auth/auth.store';
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MarketingComponent {
   public store = inject(AuthStore);
