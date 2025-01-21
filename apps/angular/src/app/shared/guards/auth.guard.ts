@@ -13,7 +13,7 @@ export function authGuard(): CanMatchFn {
       filter((status) => status !== 'idle'),
       map((status) => {
         if (status === 'authenticated') return true;
-        else return router.parseUrl('/');
+        else return router.parseUrl('/sign-in');
       }),
       take(1),
     );

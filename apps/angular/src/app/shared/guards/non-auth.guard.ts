@@ -4,7 +4,7 @@ import { AuthStore } from '../../core/auth/auth.store';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs';
 
-export function marketingGuard(): CanMatchFn {
+export function nonAuthGuard(): CanMatchFn {
   return () => {
     const router = inject(Router);
     const authStore = inject(AuthStore);
@@ -13,7 +13,7 @@ export function marketingGuard(): CanMatchFn {
       filter((status) => status !== 'idle'),
       map((status) => {
         if (status !== 'authenticated') return true;
-        else return router.parseUrl('/create-profile');
+        else return router.parseUrl('/');
       }),
       take(1),
     );
